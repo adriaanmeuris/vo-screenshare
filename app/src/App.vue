@@ -1,17 +1,27 @@
 <template>
   <div id="app">
+    <!--<div>-->
+    <!--<button @click="shareScreen">Share screen</button>-->
+    <!--<br/><br/>-->
+    <!--</div>-->
+
+    <!--<div>-->
+    <!--<video id="video" ref="videoElement" autoplay></video>-->
+    <!--</div>-->
+
+    <h1>Chat</h1>
     <div>
-      <button @click="shareScreen">Share screen</button>
-      <br/><br/>
+      <h2>Messages</h2>
+      <div class="messages-wrapper">
+        <div v-for="m in messages" v-html="m"></div>
+      </div>
     </div>
 
     <div>
-      <textarea ref="messages"></textarea>
+      <h2>Send message</h2>
+      <textarea v-model="message" @keyup.enter="sendMessage"></textarea>
     </div>
 
-    <div>
-      <video id="video" ref="videoElement" autoplay></video>
-    </div>
 
   </div>
 </template>
@@ -19,69 +29,45 @@
 <script>
   //import HelloWorld from './components/HelloWorld.vue'
   import * as adapter from 'webrtc-adapter';
-
   import quickconnect from 'rtc-quickconnect';
   //import rtc from 'rtc';
 
   export default {
     name: 'app',
-    components: {
-      //HelloWorld
+    data () {
+      return {
+        messages: [],
+        message: ''
+      }
     },
-    mounted () {
-      // let rtcInstance = rtc({
-      //   room: 'contactcenter',
-      //   signaller: 'https://da12ab52.ngrok.io/',
-      //   //capture: false
-      // });
-      //
-      // rtcInstance.on('ready', function(session) {
-      //   console.log('ready!', session);
-      // });
-
-      quickconnect('https://da12ab52.ngrok.io', { room: 'qc-simple-demo' })
-        .on('call:started', function(id, pc, data) {
-          console.log('we have a new connection to: ' + id);
-        });
-
-      // let conference;
-      //
-      // // extend our configuration with the defaults
-      // config = defaults({}, config, require('./defaultconfig.js'));
-      //
-      // // remap our options based on top level settings
-      // config.options = extend({
-      //   room: config.room,
-      //   ice: config.ice,
-      //   plugins: config.plugins,
-      //   expectedLocalStreams: config.constraints ? 1 : 0
-      // }, config.options);
-      //
-      // // create our conference instance
-      // conference = quickconnect(config.signaller, config.options);
-      //
-      // conference
-      //   .on('call:ended', removeRemoteVideos)
-      //   .on('stream:added', remoteVideo(conference, config));
-      //
-      // Object.keys(config.channels || {}).forEach(function(name) {
-      //   var channelConfig = config.channels[name];
-      //
-      //   conference.createDataChannel(name, channelConfig === true ? null : channelConfig);
-      // });
-      //
-      // // if we have constraints, then capture video
-      // if (config.constraints) {
-      //   localVideo(conference, config);
-      // }
-      //
-      // return conference;
-
+    created () {
+      // Setup the RTC connection
+      this.setupRtc();
     },
     methods: {
-      // rtcReady() {
-      //   console.log('rtcReady');
-      // },
+      setupRtc () {
+        quickconnect('https://da12ab52.ngrok.io', {room: 'qc-simple-demo'})
+          .createDataChannel('test') // tell quickconnect we want a datachannel called test
+          .on('channel:opened:test', function (id, dc) {
+            dc.onmessage = function (evt) {
+              console.log('peer ' + id + ' says: ' + evt.data);
+            };
+
+            console.log('test dc open for peer: ' + id);
+            dc.send('hi');
+          })
+          .on('call:started', function (id, pc, data) {
+            console.log('we have a new connection to: ' + id);
+          })
+
+
+      },
+
+      // Method to send the messages
+      sendMessage () {
+        // @todo empty the message
+        this.message = '';
+      },
 
       // Method triggered when clicked on share button
       shareScreen () {
