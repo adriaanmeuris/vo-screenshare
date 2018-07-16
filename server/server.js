@@ -8,11 +8,11 @@ const app = express();
 const port = process.env.PORT || 8080;
 app.set('port', port);
 
-app.use(express.static('app/dist'));
-
 router.get('/test', function (req, res) {
     res.status(200).send('Express server running');
 });
+
+app.use(express.static('app/dist'));
 
 // start listening
 const server = app.listen(app.get('port'), () => {
