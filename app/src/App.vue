@@ -36,6 +36,7 @@
     name: 'app',
     data () {
       return {
+        dataChannel: null,
         messages: [],
         message: ''
       }
@@ -46,27 +47,37 @@
     },
     methods: {
       setupRtc () {
+        let self = this;
         quickconnect('https://da12ab52.ngrok.io', {room: 'qc-simple-demo'})
           .createDataChannel('test') // tell quickconnect we want a datachannel called test
           .on('channel:opened:test', function (id, dc) {
+            console.log('Data channel opened');
+            self.dataChannel = dc;
+
             dc.onmessage = function (evt) {
-              console.log('peer ' + id + ' says: ' + evt.data);
+              // Add message to messages
+              self.messages.push(id + ': ' + evt.data);
+              //console.log('peer ' + id + ' says: ' + evt.data);
             };
 
-            console.log('test dc open for peer: ' + id);
-            dc.send('hi');
-          })
-          .on('call:started', function (id, pc, data) {
-            console.log('we have a new connection to: ' + id);
-          })
+            //console.log('test dc open for peer: ' + id);
 
+          });
+        // .on('call:started', function (id, pc, data) {
+        //   console.log('we have a new connection to: ' + id);
+        // })
 
       },
 
       // Method to send the messages
       sendMessage () {
         // @todo empty the message
-        this.message = '';
+        if (this.dataChannel) {
+          this.dataChannel.send('hi');
+          this.message = '';
+        } else {
+          console.warn('Datachannel not opened yet');
+        }
       },
 
       // Method triggered when clicked on share button
