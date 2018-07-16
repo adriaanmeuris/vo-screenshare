@@ -75,7 +75,7 @@
       sendMessage () {
         // @todo empty the message
         if (this.dataChannel) {
-          this.dataChannel.send('hi');
+          this.dataChannel.send(this.message);
           this.message = '';
         } else {
           console.warn('Datachannel not opened yet');
