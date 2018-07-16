@@ -9,6 +9,10 @@ app.set('port', port);
 
 app.use(express.static('app/dist'));
 
+app.get('/test', function(req, res) {
+    res.status(200).send('Express server running');
+  });
+
 // start listening
 const server = app.listen(app.get('port'), () => {
   console.log(`Express is listening on port ${app.get('port')}`);
