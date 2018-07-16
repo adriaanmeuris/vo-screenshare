@@ -60,6 +60,8 @@
               //console.log('peer ' + id + ' says: ' + evt.data);
             };
 
+            dc.send(id + ' joined channel.');
+
             //console.log('test dc open for peer: ' + id);
 
           });
