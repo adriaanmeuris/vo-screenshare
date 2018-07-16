@@ -56,19 +56,11 @@
 
             dc.onmessage = function (evt) {
               // Add message to messages
-              self.messages.push(id + ': ' + evt.data);
-              //console.log('peer ' + id + ' says: ' + evt.data);
+              self.messages.push('<strong style="color:red;">user</strong>' + ': ' + evt.data);
             };
 
-            dc.send(id + ' joined channel.');
-
-            //console.log('test dc open for peer: ' + id);
-
+            dc.send(' joined channel.');
           });
-        // .on('call:started', function (id, pc, data) {
-        //   console.log('we have a new connection to: ' + id);
-        // })
-
       },
 
       // Method to send the messages
@@ -76,6 +68,7 @@
         // @todo empty the message
         if (this.dataChannel) {
           this.dataChannel.send(this.message);
+          this.messages.push('<strong>you </strong>:' + this.message);
           this.message = '';
         } else {
           console.warn('Datachannel not opened yet');
