@@ -4,7 +4,8 @@ const express = require('express');
 const app = express();
 
 // set listening port
-app.set('port', 8080);
+const port = process.env.PORT || 8080;
+app.set('port', port);
 
 app.use(express.static('app/dist'));
 
