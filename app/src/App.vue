@@ -48,7 +48,7 @@
     methods: {
       setupRtc () {
         let self = this;
-        quickconnect('https://da12ab52.ngrok.io', {room: 'qc-simple-demo'})
+        quickconnect('https://342e112f.ngrok.io', {room: 'qc-simple-demo'})
           .createDataChannel('test') // tell quickconnect we want a datachannel called test
           .on('channel:opened:test', function (id, dc) {
             console.log('Data channel opened');
