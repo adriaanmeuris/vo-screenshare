@@ -1,4 +1,5 @@
 const express = require('express');
+const router = express.Router();
 
 // Create the express application.
 const app = express();
@@ -9,13 +10,13 @@ app.set('port', port);
 
 app.use(express.static('app/dist'));
 
-app.get('/test', function(req, res) {
+router.get('/test', function (req, res) {
     res.status(200).send('Express server running');
-  });
+});
 
 // start listening
 const server = app.listen(app.get('port'), () => {
-  console.log(`Express is listening on port ${app.get('port')}`);
+    console.log(`Express is listening on port ${app.get('port')}`);
 });
 
 
