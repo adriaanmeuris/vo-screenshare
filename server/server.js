@@ -25,6 +25,3 @@ app.get('/test', function (req, res) {
 app.server.listen(app.get('port'), () => {
     console.log(`Express is listening on port ${app.get('port')}`);
 });
-
-// Export the server
-//module.exports.server = server;
