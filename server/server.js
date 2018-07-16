@@ -1,5 +1,4 @@
 const express = require('express');
-const router = express.Router();
 
 // Create the express application.
 const app = express();
@@ -8,7 +7,7 @@ const app = express();
 const port = process.env.PORT || 8080;
 app.set('port', port);
 
-router.get('/test', function (req, res) {
+app.get('/test', function (req, res) {
     res.status(200).send('Express server running');
 });
 
