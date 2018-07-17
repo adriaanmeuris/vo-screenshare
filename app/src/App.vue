@@ -5,9 +5,23 @@
       <br/><br/>
     </div>
 
+    <!--<div>-->
+    <!--<video id="video" ref="videoElement" autoplay></video>-->
+    <!--</div>-->
+
+    <h1>Chat</h1>
     <div>
-      <video id="video" ref="videoElement" autoplay></video>
+      <h2>Messages</h2>
+      <div class="messages-wrapper">
+        <div v-for="m in messages" v-html="m"></div>
+      </div>
     </div>
+
+    <div>
+      <h2>Send message</h2>
+      <textarea v-model="message" @keyup.enter="sendMessage"></textarea>
+    </div>
+
 
   </div>
 </template>
@@ -15,60 +29,102 @@
 <script>
   //import HelloWorld from './components/HelloWorld.vue'
   import * as adapter from 'webrtc-adapter';
+  import quickconnect from 'rtc-quickconnect';
+  //import rtc from 'rtc';
 
   export default {
     name: 'app',
-    components: {
-      //HelloWorld
+    data () {
+      return {
+        qc: null,
+        dataChannel: null,
+        messages: [],
+        message: ''
+      }
     },
-    mounted() {
-      window.adapter = adapter;
-      console.log('adapter', adapter);
+    created () {
+      // Setup the RTC connection
+      this.setupRtc();
     },
     methods: {
-      // Method triggered when clicked on share button
-      shareScreen () {
-        this.featureDetect();
+      setupRtc () {
+        let self = this;
+        this.qc = quickconnect('https://342e112f.ngrok.io', {room: 'qc-simple-demo'})
+          .createDataChannel('test') // tell quickconnect we want a datachannel called test
+          .on('channel:opened:test', function (id, dc) {
+            console.log('Data channel opened');
+            self.dataChannel = dc;
+
+            dc.onmessage = function (evt) {
+              // Add message to messages
+              self.messages.push('<strong style="color:red;">user</strong>' + ': ' + evt.data);
+            };
+
+            dc.send(' joined channel.');
+          });
       },
 
-      // Helper method to detect screen share functionality
-      featureDetect () {
-        // Check for Firefox support
-         const screenShareSupported = !!navigator.mediaDevices.getSupportedConstraints().mediaSource;
-         if(!screenShareSupported) {
-           console.error('Screen sharing not supported yet.');
-           return;
-         }
+      // Method to send the messages
+      sendMessage () {
+        // @todo empty the message
+        if (this.dataChannel) {
+          this.dataChannel.send(this.message);
+          this.messages.push('<strong>you </strong>:' + this.message);
+          this.message = '';
+        } else {
+          console.warn('Datachannel not opened yet');
+        }
+      },
+
+      // Method triggered when clicked on share button
+      shareScreen () {
+        // Do feature detection
+        if (!this.featureDetect()) {
+          console.error('Screen capture not supported in this browser.');
+          return;
+        }
 
         let constraints = {video: {mediaSource: 'screen'}};
         navigator.mediaDevices.getUserMedia(constraints)
           .then(stream => {
             console.log('this.$refs.videoElement', this.$refs.videoElement);
             console.log('streaming', stream);
-            this.$refs.videoElement.srcObject = stream
+
+            if(this.qc) {
+              console.log('add to qc');
+              this.qc.addStream(stream)
+                .on('stream:added', function(id, pc, data) {
+                  console.log('stream added!');
+                  // attach(pc.getRemoteStreams()[0], { plugins: plugins }, function(err, el) {
+                  //   if (err) return;
+                  //
+                  //   el.dataset.peer = id;
+                  //   remote.appendChild(el);
+                  // });
+                })
+            }
+            //this.$refs.videoElement.srcObject = stream
           })
           .catch(e => console.log(e.message));
+      },
 
-        // return;
-        //
+      // Helper method to detect screen share functionality
+      featureDetect () {
+        // Check for Firefox support
+        if (!!navigator.mediaDevices.getSupportedConstraints().mediaSource) {
+          return true;
+        }
+
         // // @todo Try the native screen capture api (https://w3c.github.io/mediacapture-screen-share/)
         // const getDisplayMedia = (navigator.getDisplayMedia ||
         //   navigator.webkitGetDisplayMedia ||
         //   navigator.mozGetDisplayMedia ||
         //   navigator.msGetDisplayMedia);
         //
-        // if (getDisplayMedia) {
-        //   console.log('found', getDisplayMedia);
-        //
-        //   return getDisplayMedia({video: true}).then(stream => {
-        //     // we have a stream, attach it to a feedback video element
-        //     this.$refs.videoElement.srcObject = stream;
-        //   }, error => {
-        //     console.log('Unable to acquire screen capture', error);
-        //   });
-        // }
-        //
-        // console.log('getDisplayMedia not supported');
+        // if (getDisplayMedia) {}
+
+        // return false by default
+        return false;
       }
     }
   }
