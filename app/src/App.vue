@@ -1,9 +1,9 @@
 <template>
   <div id="app">
-    <!--<div>-->
-    <!--<button @click="shareScreen">Share screen</button>-->
-    <!--<br/><br/>-->
-    <!--</div>-->
+    <div>
+      <button @click="shareScreen">Share screen</button>
+      <br/><br/>
+    </div>
 
     <!--<div>-->
     <!--<video id="video" ref="videoElement" autoplay></video>-->
@@ -36,6 +36,7 @@
     name: 'app',
     data () {
       return {
+        qc: null,
         dataChannel: null,
         messages: [],
         message: ''
@@ -48,7 +49,7 @@
     methods: {
       setupRtc () {
         let self = this;
-        quickconnect('https://342e112f.ngrok.io', {room: 'qc-simple-demo'})
+        this.qc = quickconnect('https://342e112f.ngrok.io', {room: 'qc-simple-demo'})
           .createDataChannel('test') // tell quickconnect we want a datachannel called test
           .on('channel:opened:test', function (id, dc) {
             console.log('Data channel opened');
@@ -88,7 +89,21 @@
           .then(stream => {
             console.log('this.$refs.videoElement', this.$refs.videoElement);
             console.log('streaming', stream);
-            this.$refs.videoElement.srcObject = stream
+
+            if(this.qc) {
+              console.log('add to qc');
+              this.qc.addStream(stream)
+                .on('stream:added', function(id, pc, data) {
+                  console.log('stream added!');
+                  // attach(pc.getRemoteStreams()[0], { plugins: plugins }, function(err, el) {
+                  //   if (err) return;
+                  //
+                  //   el.dataset.peer = id;
+                  //   remote.appendChild(el);
+                  // });
+                })
+            }
+            //this.$refs.videoElement.srcObject = stream
           })
           .catch(e => console.log(e.message));
       },
