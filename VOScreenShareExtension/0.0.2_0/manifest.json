@@ -1,0 +1,23 @@
+{
+   "background": {
+      "scripts": [ "background.js" ]
+   },
+   "content_scripts": [ {
+      "js": [ "content.js" ],
+      "matches": [ "https://*/*" ]
+   } ],
+   "description": "This is a screensharing extension used to provide support by the Flemish Government",
+   "icons": {
+      "128": "icon128.png",
+      "16": "icon16.png",
+      "48": "icon48.png"
+   },
+   //"key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmnF2lmEXxSHm6DbmqwP7HIgLxKkDVNmASiGm3WH3wnm3pDzfjpieNUGWPeAa4Ta9KokJyDX/k9qopi2r5Cf4HI5HoYPUt7ocjQto4na/imU57lGGnWdB/o8pfBc5GxVILI+HRr4SSViu1a0K0ZgLIuTqDxJXRbFiekuiCUp3Uq1nnKAebfGN/gTTvHqMzf6gK8d3lEdKqj0IKorQodBYu/OEshvLfwXQpzQQuMumEz/0YuSmNQgD0/RHCsLtdEmJZajG26IaGKIE5cOgas92R3SL9pw3f+2k123cOFDul4KeXnLtDVDEZl93D9VPBtQ8nBdF95IdmdzUxWl9emPWkwIDAQAB",
+   "manifest_version": 2,
+   "minimum_chrome_version": "34",
+   "name": "VO Screensharing",
+   "permissions": [ "desktopCapture" ],
+   "short_name": "VOSS",
+   "update_url": "https://clients2.google.com/service/update2/crx",
+   "version": "0.0.1"
+}
